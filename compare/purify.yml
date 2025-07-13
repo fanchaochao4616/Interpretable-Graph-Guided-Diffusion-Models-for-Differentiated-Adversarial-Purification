@@ -1,0 +1,54 @@
+net:
+  attention_resolutions: 32,16,8
+#  batch_size: 30
+  channel_mult: ''
+  class_cond: false
+  clip_denoised: true
+  diffusion_steps: 1000
+  dropout: 0.0
+  image_size: 256
+  learn_sigma: true
+  noise_schedule: linear
+  num_channels: 256
+  num_head_channels: 64
+  num_heads: 4
+  num_heads_upsample: -1
+  num_res_blocks: 2
+  num_samples: 10000
+  predict_xstart: false
+  resblock_updown: true
+  rescale_learned_sigmas: false
+  rescale_timesteps: false
+  timestep_respacing: '250' #去噪总步数                                                -----
+  use_checkpoint: false
+  use_ddim: false #                                                                   -----
+  use_fp16: true
+  use_kl: false
+  use_new_attention_order: false
+  use_scale_shift_norm: true
+  path: "/home/fcc/codefile/HGDM/models/256x256_diffusion_uncond.pt" # 扩散模型路径
+
+
+device: "cuda" # 使用的设备
+start_epoch: 0 # 开始的 epoch
+end_epoch: 50000000000 # 结束的 epoch
+
+compare:
+  use_fp16: false
+  path: "/home/fcc/codefile/HGDM/models/256x256_diffusion_uncond.pt" # 扩散模型路径
+  if_attack:  true # 是否获取对抗样本
+  classifier: "ResNet50" # 分类器结构
+  dataset: "ImageNet-Mini" # 数据集，可选 [MNIST, CIFAR10, ImageNet,ImageNet-5k,ImageNet-Mini]
+  bsize: 2 # 批次大小，在 4090 上运行
+  is_imagenet: true # 是否为 ImageNet 数据集
+  threshold_percent: 0.15
+  threshold: 0.9
+  strength_l: 0.4
+  strength_s: 0.2
+  attack_ddim_steps: 10
+  defense_ddim_steps: 500
+  forward_noise_steps: 3
+  attack_method: "pgd"
+  n_iter: 20
+  eot: 20
+  num_ensemble_runs: 20

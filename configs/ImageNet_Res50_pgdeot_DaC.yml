@@ -1,0 +1,66 @@
+structure:
+  classifier: "ResNet50" # 分类器结构
+  dataset: "ImageNet-Mini" # 数据集，可选 [MNIST, CIFAR10, ImageNet,ImageNet-5k,ImageNet-Mini]
+  bsize: 1 # 批次大小，在 4090 上运行
+  run_samples: 50000 # 运行的样本数量
+  interpreter_names: ['GradientShap', 'IntegratedGradients'] # 解释方法名称
+  mask_type: 'steps_interpretation' #掩码方法，可选 [rcam, interpretation, rcam_interpretation, steps_interpretation, steps_rcam_interpretation]
+  start_epoch: 0 # 开始的 epoch
+  end_epoch: 50000000000 # 结束的 epoch
+
+net:
+  attention_resolutions: 32,16,8
+  batch_size: 30
+  channel_mult: ''
+  class_cond: false
+  clip_denoised: true
+  diffusion_steps: 1000
+  dropout: 0.0
+  image_size: 256
+  learn_sigma: true
+  noise_schedule: linear
+  num_channels: 256
+  num_head_channels: 64
+  num_heads: 4
+  num_heads_upsample: -1
+  num_res_blocks: 2
+  num_samples: 10000
+  predict_xstart: false
+  resblock_updown: true
+  rescale_learned_sigmas: false
+  rescale_timesteps: false
+  timestep_respacing: '250' #去噪总步数                                                -----
+  use_checkpoint: false
+  use_ddim: true #                                                                   -----
+  use_fp16: true
+  use_kl: false
+  use_new_attention_order: false
+  use_scale_shift_norm: true
+  path: "/home/fcc/codefile/HGDM/models/256x256_diffusion_uncond.pt" # 扩散模型路径
+
+attack:
+  if_attack:  true # 是否获取对抗样本
+  attack_method: "pgd_eot" # 攻击方法，可选 [clf_pgd, bpda, spsa]
+  ptb: 8. # 扰动幅度，像素尺度
+  ball_dim: -1 # 范数类型，-1 或 1 或 2
+  n_eot: 20 # EOT（期望变换）次数，1 表示不应用 EOT
+  attack_lambda: 0.007 # 自适应攻击步长策略
+  attack_steps: 200 # 攻击步骤数
+  paper: "Divide and Conquer"
+
+
+purification:
+  max_iter: 1 # 默认最大迭代次数
+  threshold_adv_min: 0 #全局语义保留阈值
+  threshold_focus_min: 0.6 #主体区域语义保留阈值
+  mask_step: 10 # 掩码步数                                                                  -----
+  purify_step: 10 # 去噪开始步数                                                              -----
+  purify_natural: true # Whether to purify natural images, for time complexity
+  cond: true # 是否使用条件去噪                                                              -----
+  guide_mode: "MSE" # 引导模式，可选 [MSE, SSIM, L2, L2_CONSTANT]
+  guide_scale: 1000 # 引导缩放因子 L2_CONSTANT设置为1 MSE SSIM设置为1000
+  guide_scale_base: 'per=4'
+
+device: "cuda" # 使用的设备
+rank: 0 #0:干净样本无掩码；1:干净样本有掩码 2:对抗样本无掩码；3:对抗样本有掩码
+grad_enabled: true
